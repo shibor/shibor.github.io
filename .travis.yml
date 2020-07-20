@@ -8,9 +8,8 @@ branches:
     - hexo-source # build master branch only
 before_script:
   - export TZ='Asia/Shanghai'
-  - hexo generate
 script:
-  - hexo clean && hexo deploy
+  - hexo generate
 deploy:
   provider: pages
   skip-cleanup: true
