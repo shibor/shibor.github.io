@@ -1,0 +1,31 @@
+sudo: false
+language: node_js
+node_js:
+  - 12 # use nodejs v12 LTS
+cache: npm
+branches:
+  only:
+    - hexo-source # build master branch only
+before_script:
+  - export TZ='Asia/Shanghai'
+  - hexo generate
+script:
+  - hexo clean && hexo deploy
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GH_TOKEN
+  keep-history: true
+  target_branch: master # generate static files to master
+  on:
+    branch: hexo-source # source code of hexo
+    local-dir: public
+    
+notifications:
+  email:
+    recipients:
+      - shibor.zhang@qq.com 
+    on_success: change # default: change
+    on_failure: always # default: always
+
+
