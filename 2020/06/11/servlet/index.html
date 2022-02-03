@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="j5cOe3l5FQjjF4djGxAWUQq7z8QP1N9I3DCabMyO_Hk">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"shibor.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Java Servlet 是 java web 开发的一套解决方案，一套接口定义。Servlet 程序在服务器端运行，动态地生成 Web 页面。运行 Servlet 程序的服务器叫做 Servlet 容器。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Servlet 知识梳理">
+<meta property="og:url" content="https://shibor.github.io/2020/06/11/servlet/index.html">
+<meta property="og:site_name" content="shibor&#39;s blog">
+<meta property="og:description" content="Java Servlet 是 java web 开发的一套解决方案，一套接口定义。Servlet 程序在服务器端运行，动态地生成 Web 页面。运行 Servlet 程序的服务器叫做 Servlet 容器。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/shibor/imageRepo/img/20200611211701.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/shibor/imageRepo/img/20200611210925.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/shibor/imageRepo/img/20200611233206.jpg">
+<meta property="article:published_time" content="2020-06-11T12:42:52.000Z">
+<meta property="article:modified_time" content="2022-02-03T15:19:16.958Z">
+<meta property="article:author" content="shibor zhang">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="java web">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/shibor/imageRepo/img/20200611211701.png">
+
+<link rel="canonical" href="https://shibor.github.io/2020/06/11/servlet/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Servlet 知识梳理 | shibor's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">shibor's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://shibor.github.io/2020/06/11/servlet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="shibor zhang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="shibor's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Servlet 知识梳理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-11 20:42:52" itemprop="dateCreated datePublished" datetime="2020-06-11T20:42:52+08:00">2020-06-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-03 23:19:16" itemprop="dateModified" datetime="2022-02-03T23:19:16+08:00">2022-02-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Java Servlet 是 java web 开发的一套解决方案，一套接口定义。Servlet 程序在服务器端运行，动态地生成 Web 页面。运行 Servlet 程序的服务器叫做 Servlet 容器。</p>
+<a id="more"></a>
+
+<p>常见的容器有</p>
+<ul>
+<li><a href="https://tomcat.apache.org/" target="_blank" rel="noopener">Tomcat</a>：由Apache开发的开源免费服务器；</li>
+<li><a href="https://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>：由Eclipse开发的开源免费服务器；</li>
+<li><a href="https://javaee.github.io/glassfish/" target="_blank" rel="noopener">GlassFish</a>：一个开源的全功能JavaEE服务器。</li>
+<li>还有其他的商业服务器。Oracle的<a href="https://www.oracle.com/middleware/weblogic/" target="_blank" rel="noopener">WebLogic</a>，IBM的<a href="https://www.ibm.com/cloud/websphere-application-platform/" target="_blank" rel="noopener">WebSphere</a>。</li>
+</ul>
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>maven 项目结构，打包生成 war 包进行部署。<code>web.xml</code> 是 web 应用的配置文件。</p>
+<img src="https://cdn.jsdelivr.net/gh/shibor/imageRepo/img/20200611211701.png" alt="项目基本结构" style="zoom:50%;" />
+
+
+
+<h2 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h2><ul>
+<li><p>web容器在启动时，为每个微博应用程序创建一个对应的<code>ServletContext</code>，代表当前的 web 应用</p>
+</li>
+<li><p>一个web应用中的所有<code>Servlet</code>共享同一个<code>ServletContext</code>对象，因此<code>Servlet</code>对象之间可以通过<code>ServletContext</code>对象来实现通信</p>
+</li>
+<li><p>应用：</p>
+</li>
+<li><ul>
+<li>获取 web 应用的全局初始化参数</li>
+<li>通过<code>ServletContext</code>实现数据共享</li>
+<li>利用<code>ServletContext</code>读取资源文件</li>
+</ul>
+</li>
+</ul>
+<img src="https://cdn.jsdelivr.net/gh/shibor/imageRepo/img/20200611210925.png" alt="servlet容器结构" style="zoom:40%;" />
+
+
+
+<h2 id="加载顺序"><a href="#加载顺序" class="headerlink" title="加载顺序"></a>加载顺序</h2><p>web 容器的加载顺序 ServletContext –&gt; context-param –&gt; listener –&gt; filter –&gt; servlet</p>
+<p>这些元素可以配置在 <code>web.xml</code> 文件中的任意位置，不会因为 filter 在 <code>web.xml</code> 文件中写在 listener 前面就先加载 filter 。</p>
+<p>加载过程顺序如下：</p>
+<ul>
+<li>启动一个 web 项目，web 容器会读取它的配置文件 <code>web.xml</code>，读取 listener 和 context-param 两个结点。</li>
+<li>创建一个 ServletContext ( Servlet 上下文)，这个 web 项目的所有部分都将共享这个上下文</li>
+<li>容器将 context-param 转换为键值对，并交给 ServletContext</li>
+<li>容器创建 listener 中的类实例,创建监听器</li>
+<li>容器创建 filter 实例</li>
+<li>servlet 实例在第一次请求的时候才会创建实例，然后 <code>init()</code> 初始化。（在 <code>web.xml</code> 中配置 <code>load-on-startup</code> 标签后，会在应用启动后就初始化）</li>
+</ul>
+<h2 id="Servlet-生命周期"><a href="#Servlet-生命周期" class="headerlink" title="Servlet 生命周期"></a>Servlet 生命周期</h2><p>Servlet 生命周期的三个核心方法分别是 <code>init()</code> , <code>service()</code> 和<code>destroy()</code>。每个Servlet都会实现这些方法，并且在特定的运行时间调用它们。</p>
+<h3 id="init"><a href="#init" class="headerlink" title="init"></a>init</h3><p>在 Servlet 生命周期的初始化阶段，<strong>web容器通过调用 <code>init()</code> 方法来初始化Servlet实例</strong>，并且可以传递一个实现 <code>javax.servlet.ServletConfig</code> 接口的对象给它。这个配置对象使 Servlet 能够读取在 web 应用的 <code>web.xml</code> 文件里定义的名值（name-value）初始参数。<strong>这个方法在Servlet实例的生命周期里只调用一次</strong>。</p>
+<h3 id="service"><a href="#service" class="headerlink" title="service"></a>service</h3><p><strong>web 容器调用 Servlet 的 <code>service()</code> 方法来处理每一个请求</strong>。<code>service()</code> 方法定义了能够处理的请求类型并且调用适当方法来处理这些请求。编写Servlet的开发者必须为这些方法提供实现。如果发出一个Servlet没实现的请求，那么父类的方法就会被调用并且通常会给请求方（requester）返回一个错误信息。</p>
+<h3 id="destroy"><a href="#destroy" class="headerlink" title="destroy"></a>destroy</h3><p><strong>web 容器调用 <code>destroy()</code> 方法来终结 Servlet</strong>。如果你想在 Servlet 的生命周期内关闭或者销毁一些文件系统或者网络资源，你可以调用这个方法来实现。<code>destroy()</code> 方法和 <code>init()</code> 方法一样，在 Servlet 的生命周期里只能调用一次。</p>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p><code>load-on-startup</code> tomcat启动时就创建对象,大于0,多个Servlet的话按照数字从小到大创建</p>
+<blockquote>
+<p>Servlet实例是在Tomcat中创建，Tomcat只创建一个实例，因此是单例的。</p>
+</blockquote>
+<h2 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h2><p><code>Filter</code>可认为是<code>Servlet</code>的一种“加强版”，主要用于对用户请求<code>request</code>进行预处理，也可以对<code>Response</code>进行后处理，是个典型的处理链。</p>
+<p>使用<code>Filter</code>的完整流程是：<code>Filter</code>对用户请求进行预处理，接着将请求<code>HttpServletRequest</code>交给<code>Servlet</code>进行处理并生成响应，最后<code>Filter</code>再对服务器响应<code>HttpServletResponse</code>进行后处理。<code>Filter</code>与<code>Servlet</code>具有完全相同的生命周期。</p>
+<p>换种说法，<code>Servlet</code>里有<code>request</code>和<code>response</code>两个对象，<code>Filter</code>能够在一个<code>request</code>到达<code>Servlet</code>之前预处理<code>request</code>，也可以在离开<code>Servlet</code>时处理<code>response</code>，<code>Filter</code>其实是一个<code>Servlet</code>链。</p>
+<img src="https://cdn.jsdelivr.net/gh/shibor/imageRepo/img/20200611233206.jpg" style="zoom:75%;" />
+
+
+
+<p>以下是Filter的一些常见应用场合，</p>
+<ul>
+<li>认证Filter</li>
+<li>日志和审核Filter</li>
+<li>图片转换Filter</li>
+<li>数据压缩Filter</li>
+<li>密码Filter</li>
+<li>令牌Filter</li>
+<li>触发资源访问事件的Filter</li>
+<li>XSLT Filter</li>
+<li>媒体类型链Filter</li>
+</ul>
+<blockquote>
+<p>Filter可负责拦截多个请求或响应；一个请求或响应也可被多个Filter拦截。</p>
+</blockquote>
+<h2 id="Filter-生命周期"><a href="#Filter-生命周期" class="headerlink" title="Filter 生命周期"></a>Filter 生命周期</h2><h3 id="init-1"><a href="#init-1" class="headerlink" title="init"></a>init</h3><p>在应用启动的时候就进行装载 Filter 类，容器创建好 Filter 对象实例后，调用 <code>init()</code> 方法。接着被 Web 容器保存进应用级的集合容器中去了等待着，用户访问资源。</p>
+<h3 id="doFilter"><a href="#doFilter" class="headerlink" title="doFilter"></a>doFilter</h3><p>当用户访问的资源正好被 Filter 的<code>url-pattern</code>拦截时，容器会取出 Filter 类调用 <code>doFilter()</code> 方法，下次或多次访问被拦截的资源时，Web 容器会直接取出指定 Filter 对象实例调用 <code>doFilter()</code> 方法。</p>
+<h3 id="destroy-1"><a href="#destroy-1" class="headerlink" title="destroy"></a>destroy</h3><p>当应用服务被停止或重新装载了，则会执行 Filter 的 <code>destroy()</code> 方法，Filter 对象销毁。</p>
+<h3 id="配置-1"><a href="#配置-1" class="headerlink" title="配置"></a>配置</h3><p>当有多个过滤的<code>url-pattern</code>一样时，过滤器的先后和配置的先后保持一致<br>FilterChain：过滤器链，当有多个过滤器配置了相同的<code>url-pattern</code>时，每个过滤器就像链子一样串联起来，如MyFilter–&gt;MyFilter2—&gt;MyFilterN,<br>当执行完第一个过滤器的时候通过调用<code>chain.doFilter(request, response)</code>来执行过滤器链中的下一个过滤器的 <code>doFilter()</code> 方法</p>
+<p><code>filter-mapping</code> 标签中 <code>dispatcher</code></p>
+<p>指定过滤器所拦截的资源被 Servlet 容器调用的方式，可以是<code>REQUEST</code>,<code>INCLUDE</code>,<code>FORWARD</code>和<code>ERROR</code>之一，默认<code>REQUEST</code>。用户可以设置多个子元素用来指定 Filter 对资源的多种调用方式进行拦截。</p>
+<h4 id="REQUEST："><a href="#REQUEST：" class="headerlink" title="REQUEST："></a>REQUEST：</h4><p>当用户直接访问页面时，Web容器将会调用过滤器。如果目标资源是通过<code>RequestDispatcher</code>的<code>include()</code>或<code>forward()</code>方法访问或<code>ERROR</code>情况时，那么该过滤器就不会被调用。</p>
+<h4 id="INCLUDE："><a href="#INCLUDE：" class="headerlink" title="INCLUDE："></a>INCLUDE：</h4><p>如果目标资源是通过<code>RequestDispatcher</code>的<code>include()</code>方法访问时，那么该过滤器将被调用。除此之外，该过滤器不会被调用。</p>
+<h4 id="FORWARD："><a href="#FORWARD：" class="headerlink" title="FORWARD："></a>FORWARD：</h4><p>如果目标资源是通过<code>RequestDispatcher</code>的<code>forward()</code>方法访问时，那么该过滤器将被调用，除此之外，该过滤器不会被调用。</p>
+<h4 id="ERROR："><a href="#ERROR：" class="headerlink" title="ERROR："></a>ERROR：</h4><p>如若在<code>A.jsp</code>页面<code>page</code>指令中指定了<code>error</code>属性=<code>examError.jsp</code>，那么<code>A.jsp</code>中若出现了异常，会跳转到<code>examError.jsp</code>中处理。而在跳转到<code>examError.jsp</code>时，若过滤器配置了<code>ERROR</code>的<code>dispather</code>那么则会拦截，否则不会拦截。</p>
+<h2 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a>Listener</h2><p>Listener 是用来监听 web 工程状态改变的一种实现机制</p>
+<ul>
+<li><p>监听整个web工程：</p>
+<ul>
+<li>ServletContextListener</li>
+<li>ServletContextAttributeListener</li>
+</ul>
+</li>
+<li><p>监听session范围</p>
+<ul>
+<li>HttpSessionListener</li>
+<li>HttpSessionAttributeListener</li>
+</ul>
+</li>
+<li><p>监听request范围：</p>
+<ul>
+<li>ServletRequestListener</li>
+<li>ServletRequestAttributeListener</li>
+</ul>
+</li>
+</ul>
+<p><code>listener</code>为web应用程序定义监听器，监听器用来监听各种事件，比如：<code>Application</code>和<code>Session</code>事件，所有的监听器按照相同的方式定义，功能取决去它们各自实现的接口，常用的Web事件接口有如下几个：</p>
+<ul>
+<li><code>ServletContextListener</code>：用于监听<code>Web Application</code>的启动和关闭；</li>
+<li><code>ServletContextAttributeListener</code>：用于监听<code>ServletContext</code>范围（Application）内属性的改变；</li>
+<li><code>ServletRequestListener</code>：用于监听用户的请求；</li>
+<li><code>ServletRequestAttributeListener</code>：用于监听<code>ServletRequest</code>范围（Request）内属性的改变；</li>
+<li><code>HttpSessionListener</code>：用于监听用户<code>session</code>的开始和结束；</li>
+<li><code>HttpSessionAttributeListener</code>：用于监听<code>HttpSession</code>范围（Session）内属性的改变。</li>
+</ul>
+<p><code>&lt;listener&gt;</code>主要用于监听Web应用事件，其中有两个比较重要的Web应用事件：<code>Application</code>的启动和停止（starting up or shutting down）和<code>Session</code>的创建和失效（created or destroyed）。</p>
+<p><code>Application</code>启动事件发生在应用第一次被<code>Servlet</code>容器装载和启动的时候；停止事件发生在Web应用停止的时候。<code>Session</code>创建事件发生在每次一个新的<code>Session</code>创建的时候，类似地<code>Session</code>失效事件发生在每次一个<code>Session</code>失效的时候。</p>
+<p>容器注册监听器的方式有三种：</p>
+<ol>
+<li>利用 <code>@WebListener</code> 注解。</li>
+<li>在<code>web.xml</code>应用部署文件里注册监听器。</li>
+<li>使用 ServletContext 里定义的 <code>addListener()</code> 方法</li>
+</ol>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="RequestDispatcher-forward-转发请求到另一个Servlet"><a href="#RequestDispatcher-forward-转发请求到另一个Servlet" class="headerlink" title="RequestDispatcher.forward()转发请求到另一个Servlet"></a>RequestDispatcher.forward()转发请求到另一个Servlet</h3><p><strong>浏览器地址不变</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RequestDispatcher rd = servletContext.getRequestDispatcher(<span class="string">"/NextServlet"</span>);</span><br><span class="line">rd.forward(request, response);</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="HttpServletResponse-sendRedirect-重定向请求到另一个Servlet"><a href="#HttpServletResponse-sendRedirect-重定向请求到另一个Servlet" class="headerlink" title="HttpServletResponse.sendRedirect()重定向请求到另一个Servlet"></a>HttpServletResponse.sendRedirect()重定向请求到另一个Servlet</h3><p><strong>浏览器地址变成新的servlet</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpServletResponse.sendRedirect(<span class="string">"/anotherURL"</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="serlet-3-0注解"><a href="#serlet-3-0注解" class="headerlink" title="serlet 3.0注解"></a>serlet 3.0注解</h3><ul>
+<li><p><code>@WebServlet</code></p>
+</li>
+<li><p><code>@WebInitParam</code></p>
+</li>
+<li><p><code>@WebFilter</code></p>
+</li>
+<li><p><code>@WebListener</code></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+              <a href="/tags/java-web/" rel="tag"># java web</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/17/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/24/css-basic/" rel="next" title="CSS 基础">
+      CSS 基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目结构"><span class="nav-number">1.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器"><span class="nav-number">2.</span> <span class="nav-text">容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加载顺序"><span class="nav-number">3.</span> <span class="nav-text">加载顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Servlet-生命周期"><span class="nav-number">4.</span> <span class="nav-text">Servlet 生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#init"><span class="nav-number">4.1.</span> <span class="nav-text">init</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#service"><span class="nav-number">4.2.</span> <span class="nav-text">service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#destroy"><span class="nav-number">4.3.</span> <span class="nav-text">destroy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置"><span class="nav-number">4.4.</span> <span class="nav-text">配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filter"><span class="nav-number">5.</span> <span class="nav-text">Filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filter-生命周期"><span class="nav-number">6.</span> <span class="nav-text">Filter 生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#init-1"><span class="nav-number">6.1.</span> <span class="nav-text">init</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#doFilter"><span class="nav-number">6.2.</span> <span class="nav-text">doFilter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#destroy-1"><span class="nav-number">6.3.</span> <span class="nav-text">destroy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置-1"><span class="nav-number">6.4.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#REQUEST："><span class="nav-number">6.4.1.</span> <span class="nav-text">REQUEST：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#INCLUDE："><span class="nav-number">6.4.2.</span> <span class="nav-text">INCLUDE：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FORWARD："><span class="nav-number">6.4.3.</span> <span class="nav-text">FORWARD：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ERROR："><span class="nav-number">6.4.4.</span> <span class="nav-text">ERROR：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Listener"><span class="nav-number">7.</span> <span class="nav-text">Listener</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">8.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RequestDispatcher-forward-转发请求到另一个Servlet"><span class="nav-number">8.1.</span> <span class="nav-text">RequestDispatcher.forward()转发请求到另一个Servlet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HttpServletResponse-sendRedirect-重定向请求到另一个Servlet"><span class="nav-number">8.2.</span> <span class="nav-text">HttpServletResponse.sendRedirect()重定向请求到另一个Servlet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#serlet-3-0注解"><span class="nav-number">8.3.</span> <span class="nav-text">serlet 3.0注解</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">shibor zhang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">shibor zhang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
